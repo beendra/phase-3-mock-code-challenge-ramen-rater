@@ -77,8 +77,8 @@ body.addEventListener('click', (event) => {
     }
     else if (event.target.matches('div#ramen-detail button')){
         const id = event.target.dataset.id
-        const img = body.querySelector('img[data-id="`${id}`"]')
-        debugger
+        const img = body.querySelector(`img[data-id='${id}']`)
+        renderFirstRamen()
         img.remove()
         fetch(`${url}/${id}`, {
             method: "DELETE"
@@ -123,7 +123,7 @@ body.addEventListener('submit', event => {
         const newImage = event.target[2].value    
         const newRating = event.target[3].value    
         const newComment = event.target[4].value    
-
+        renderOneRamen(newName, newRestaurant, newImage, newRating, newComment)
         fetch(url, {
             method: "POST",
             headers: {
@@ -145,10 +145,13 @@ body.addEventListener('submit', event => {
     
 })
 
-/*** APP INIT ***/
-document.addEventListener("DOMContentLoaded", (event) => {
+const renderFirstRamen = () => {
     fetch(`${url}/1`)
     .then(resp => resp.json())
     .then(ramenObj => {renderOneRamen(ramenObj)})
+}
+/*** APP INIT ***/
+document.addEventListener("DOMContentLoaded", (event) => {
+    renderFirstRamen()
 })
 renderAllRamen()
