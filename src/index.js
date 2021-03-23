@@ -51,6 +51,65 @@ const fetchRamenDetail = (event) => {
     })
 }
 
+const updateRating = (event) => {
+    const id = event.target.dataset.id
+    event.preventDefault()
+    console.log(event.target)
+
+    const newRating = event.target[0].value
+    const newComment = event.target[1].value
+
+    fetch(`${url}/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            rating: newRating,
+            comment: newComment
+        })
+    })
+}
+
+const newRamen = (event) => {
+    event.preventDefault() 
+    const newRamen = {
+        name: event.target.name.value,   
+        restaurant: event.target.restaurant.value,   
+        image: event.target.image.value,    
+        rating: event.target.rating.value,    
+        comment: event.target['new-comment'].value
+    }  
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(newRamen)
+    })
+    .then(resp => {
+        if (resp.ok) {
+            return resp.json()
+        }
+        throw new Error(resp.statusText)
+        })
+    .then(newRamenObj => imgRamen(newRamenObj))
+    .catch(error => {
+        alert(error)
+        console.log(error)})
+    event.target.reset()
+}
+
+const renderFirstRamen = () => {
+    fetch(`${url}`)
+    .then(resp => resp.json())
+    .then(ramenObjs => {
+        ramenObjs.forEach(ramenObj => renderOneRamen(ramenObj))
+        })
+}
 /*** EVENT LISTENERS ***/
 body.addEventListener('click', (event) => {
     if (event.target.matches('div#ramen-menu img')){
@@ -59,8 +118,8 @@ body.addEventListener('click', (event) => {
     else if (event.target.matches('div#ramen-detail button')){
         const id = event.target.dataset.id
         const img = body.querySelector(`img[data-id='${id}']`)
-        renderFirstRamen()
         img.remove()
+        renderFirstRamen()
         fetch(`${url}/${id}`, {
             method: "DELETE"
         })
@@ -69,61 +128,14 @@ body.addEventListener('click', (event) => {
 
 body.addEventListener('submit', event => {
     if (event.target.matches('form#ramen-rating')){
-            const id = event.target.dataset.id
-            event.preventDefault()
-        
-            const newRating = event.target[0].value
-            const newComment = event.target[1].value
-
-            fetch(`${url}/${id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({
-                    rating: newRating,
-                    comment: newComment
-                })
-            })
+        updateRating(event)
     }
     else if (event.target.matches('form#new-ramen')){
-        event.preventDefault() 
-        const newRamen = {
-            name: event.target.name.value,   
-            restaurant: event.target.restaurant.value,   
-            image: event.target.image.value,    
-            rating: event.target.rating.value,    
-            comment: event.target['new-comment'].value
-        }  
-
-        fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(newRamen)
-        })
-        .then(resp => {
-            if (resp.ok) {
-                return resp.json()
-            }
-            throw new Error(resp.statusText)
-            })
-        .then(newRamenObj => imgRamen(newRamenObj))
-        .catch(error => {
-            alert(error)
-            console.log(error)})
-        event.target.reset()
+        newRamen(event)
     }
-    
 })
 
-const renderFirstRamen = () => {
-    fetch(`${url}/1`)
-    .then(resp => resp.json())
-    .then(ramenObj => {renderOneRamen(ramenObj)})
-}
+
+/*** APP INIT ***/
 
 renderAllRamen()
