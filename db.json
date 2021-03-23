@@ -6,7 +6,7 @@
       "restaurant": "Nonono",
       "image": "./assets/ramen/shoyu.jpg",
       "rating": "10",
-      "comment": "Delish. WOW"
+      "comment": "Delish!"
     },
     {
       "id": 2,
@@ -29,7 +29,7 @@
       "name": "Gyukotsu Ramen",
       "restaurant": "Za-Ya Ramen",
       "image": "./assets/ramen/gyukotsu.jpg",
-      "rating": 8,
+      "rating": "10",
       "comment": "Good to the last drop."
     },
     {

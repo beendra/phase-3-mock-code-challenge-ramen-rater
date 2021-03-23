@@ -23,8 +23,8 @@ const renderOneRamen = (ramenObj) => {
     formUpdate.dataset.id = ramenObj.id
     const rating = formUpdate.querySelector('input#rating')
     const comment = formUpdate.querySelector('textarea#comment')
-    rating.value = `${ramenObj.rating}`
-    comment.value = `${ramenObj.comment}`
+    rating.value = ramenObj.rating
+    comment.value = ramenObj.comment
     const dButton = document.createElement('BUTTON')
     dButton.dataset.id = ramenObj.id
     dButton.innerText = " 🙅‍♀️ "
@@ -91,12 +91,14 @@ body.addEventListener('submit', event => {
             const id = event.target.dataset.id
             event.preventDefault()
             
-            const rating = formUpdate.querySelector('input#rating')
-            const comment = formUpdate.querySelector('textarea#comment')
             const newRating = event.target[0].value
             const newComment = event.target[1].value
-            rating.value = newRating
-            comment.value = newComment
+            
+            // const rating = formUpdate.querySelector('input#rating')
+            // const comment = formUpdate.querySelector('textarea#comment')
+            // rating.value = newRating
+            // comment.value = newComment
+
             fetch(`${url}/${id}`, {
                 method: "PATCH",
                 headers: {
@@ -108,13 +110,13 @@ body.addEventListener('submit', event => {
                     comment: newComment
                 })
             })
-            .then(resp => resp.json())
-            .then(ramenObj => {
-                const rating = formUpdate.querySelector('input#rating')
-                const comment = formUpdate.querySelector('textarea#comment')
-                rating.value = `${ramenObj.rating}`
-                comment.value = `${ramenObj.comment}`
-            })
+            // .then(resp => resp.json())
+            // .then(ramenObj => {
+            //     const rating = formUpdate.querySelector('input#rating')
+            //     const comment = formUpdate.querySelector('textarea#comment')
+            //     rating.value = `${ramenObj.rating}`
+            //     comment.value = `${ramenObj.comment}`
+            // })
     }
     else if (event.target.matches('form#new-ramen')){
         event.preventDefault()   
