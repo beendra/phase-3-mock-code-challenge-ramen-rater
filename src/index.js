@@ -35,6 +35,9 @@ const renderAllRamen = () => {
     fetch(url)
     .then(resp => resp.json())
     .then(ramenObjects => {
+        if (ramenObjects.length > 0) {
+            renderOneRamen(ramenObjects[0])
+        }
         ramenObjects.forEach(ramenObj => imgRamen(ramenObj))
     })
 }
@@ -47,28 +50,6 @@ const fetchRamenDetail = (event) => {
         renderOneRamen(ramenObj)
     })
 }
-
-// const updateRamen = (event) => {
-//     const id = event.dataset.id
-//     event.preventDefault()
-//     const rating = event.target[0].value
-//     const comment = event.target[1].value
-//     fetch(`${url}/${id}`, {
-//         method: "PATCH",
-//         headers: {
-//             "Content-Type": "application/json",
-//             "Accept": "application/json"
-//         },
-//         body: JSON.stringify({
-//             rating: rating,
-//             comment: comment
-//         })
-//     })
-//     .then(resp => resp.json())
-//     .then(ramenObj => {
-//         renderOneRamen(ramenObj)
-//     })
-// }
 
 /*** EVENT LISTENERS ***/
 body.addEventListener('click', (event) => {
@@ -90,14 +71,9 @@ body.addEventListener('submit', event => {
     if (event.target.matches('form#ramen-rating')){
             const id = event.target.dataset.id
             event.preventDefault()
-            
+        
             const newRating = event.target[0].value
             const newComment = event.target[1].value
-            
-            // const rating = formUpdate.querySelector('input#rating')
-            // const comment = formUpdate.querySelector('textarea#comment')
-            // rating.value = newRating
-            // comment.value = newComment
 
             fetch(`${url}/${id}`, {
                 method: "PATCH",
@@ -110,38 +86,35 @@ body.addEventListener('submit', event => {
                     comment: newComment
                 })
             })
-            // .then(resp => resp.json())
-            // .then(ramenObj => {
-            //     const rating = formUpdate.querySelector('input#rating')
-            //     const comment = formUpdate.querySelector('textarea#comment')
-            //     rating.value = `${ramenObj.rating}`
-            //     comment.value = `${ramenObj.comment}`
-            // })
     }
     else if (event.target.matches('form#new-ramen')){
-        event.preventDefault()   
-        const newName = event.target[0].value   
-        const newRestaurant = event.target[1].value   
-        const newImage = event.target[2].value    
-        const newRating = event.target[3].value    
-        const newComment = event.target[4].value    
-        renderOneRamen(newName, newRestaurant, newImage, newRating, newComment)
+        event.preventDefault() 
+        const newRamen = {
+            name: event.target.name.value,   
+            restaurant: event.target.restaurant.value,   
+            image: event.target.image.value,    
+            rating: event.target.rating.value,    
+            comment: event.target['new-comment'].value
+        }  
+
         fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            body: JSON.stringify({
-                name: newName,
-                restaurant: newRestaurant,
-                image: newImage,
-                rating: newRating,
-                comment: newComment
-            })
+            body: JSON.stringify(newRamen)
         })
-        .then(resp => resp.json())
-        .then(newRamenObj => renderOneRamen(newRamenObj))
+        .then(resp => {
+            if (resp.ok) {
+                return resp.json()
+            }
+            throw new Error(resp.statusText)
+            })
+        .then(newRamenObj => imgRamen(newRamenObj))
+        .catch(error => {
+            alert(error)
+            console.log(error)})
         event.target.reset()
     }
     
@@ -152,8 +125,5 @@ const renderFirstRamen = () => {
     .then(resp => resp.json())
     .then(ramenObj => {renderOneRamen(ramenObj)})
 }
-/*** APP INIT ***/
-document.addEventListener("DOMContentLoaded", (event) => {
-    renderFirstRamen()
-})
+
 renderAllRamen()
