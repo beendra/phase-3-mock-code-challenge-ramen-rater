@@ -1,7 +1,7 @@
 /*** GLOBAL VARIABLE ***/
 const body = document.body
 const url = "http://localhost:3000/ramens"
-const form = body.querySelector('form#ramen-rating')
+const formUpdate = body.querySelector('form#ramen-rating')
 
 
 /*** HELPER FUNCTION ***/
@@ -20,11 +20,15 @@ const renderOneRamen = (ramenObj) => {
         <h2 class="name">${ramenObj.name}</h2>
         <h3 class="restaurant">${ramenObj.restaurant}</h3>
         `
-    form.dataset.id = ramenObj.id
-    const rating = form.querySelector('input#rating')
-    const comment = form.querySelector('textarea#comment')
+    formUpdate.dataset.id = ramenObj.id
+    const rating = formUpdate.querySelector('input#rating')
+    const comment = formUpdate.querySelector('textarea#comment')
     rating.value = `${ramenObj.rating}`
     comment.value = `${ramenObj.comment}`
+    const dButton = document.createElement('BUTTON')
+    dButton.dataset.id = ramenObj.id
+    dButton.innerText = " 🙅‍♀️ "
+    detailDiv.append(dButton)
 }
 
 const renderAllRamen = () => {
@@ -71,15 +75,24 @@ body.addEventListener('click', (event) => {
     if (event.target.matches('div#ramen-menu img')){
         fetchRamenDetail(event.target)
     }
+    else if (event.target.matches('div#ramen-detail button')){
+        const id = event.target.dataset.id
+        const img = body.querySelector('img[data-id="`${id}`"]')
+        debugger
+        img.remove()
+        fetch(`${url}/${id}`, {
+            method: "DELETE"
+        })
+    }
 })
 
-form.addEventListener('submit', event => {
+body.addEventListener('submit', event => {
     if (event.target.matches('form#ramen-rating')){
             const id = event.target.dataset.id
             event.preventDefault()
             
-            const rating = form.querySelector('input#rating')
-            const comment = form.querySelector('textarea#comment')
+            const rating = formUpdate.querySelector('input#rating')
+            const comment = formUpdate.querySelector('textarea#comment')
             const newRating = event.target[0].value
             const newComment = event.target[1].value
             rating.value = newRating
@@ -97,14 +110,45 @@ form.addEventListener('submit', event => {
             })
             .then(resp => resp.json())
             .then(ramenObj => {
-                const rating = form.querySelector('input#rating')
-                const comment = form.querySelector('textarea#comment')
+                const rating = formUpdate.querySelector('input#rating')
+                const comment = formUpdate.querySelector('textarea#comment')
                 rating.value = `${ramenObj.rating}`
                 comment.value = `${ramenObj.comment}`
-
             })
     }
+    else if (event.target.matches('form#new-ramen')){
+        event.preventDefault()   
+        const newName = event.target[0].value   
+        const newRestaurant = event.target[1].value   
+        const newImage = event.target[2].value    
+        const newRating = event.target[3].value    
+        const newComment = event.target[4].value    
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                name: newName,
+                restaurant: newRestaurant,
+                image: newImage,
+                rating: newRating,
+                comment: newComment
+            })
+        })
+        .then(resp => resp.json())
+        .then(newRamenObj => renderOneRamen(newRamenObj))
+        event.target.reset()
+    }
+    
 })
 
 /*** APP INIT ***/
+document.addEventListener("DOMContentLoaded", (event) => {
+    fetch(`${url}/1`)
+    .then(resp => resp.json())
+    .then(ramenObj => {renderOneRamen(ramenObj)})
+})
 renderAllRamen()
