@@ -4,7 +4,7 @@ const url = "http://localhost:3000/ramens"
 const formUpdate = body.querySelector('form#ramen-rating')
 
 
-/*** HELPER FUNCTION ***/
+/*** HELPER FUNCTIONS ***/
 const imgRamen = (ramenObj) => {
     const img = document.createElement('img')
     img.src = ramenObj.image
@@ -108,7 +108,7 @@ const renderFirstRamen = () => {
     .then(resp => resp.json())
     .then(ramenObjs => {
         ramenObjs.forEach(ramenObj => renderOneRamen(ramenObj))
-        })
+    })
 }
 /*** EVENT LISTENERS ***/
 body.addEventListener('click', (event) => {
